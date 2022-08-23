@@ -1,0 +1,8 @@
+pandas
+numpy
+torchvision
+tensorboard
+yapf
+addict
+regex
+mmcv

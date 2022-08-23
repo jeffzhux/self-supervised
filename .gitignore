@@ -1,0 +1,9 @@
+
+# 環境
+.venv/
+
+#實驗記錄
+experiment/
+experiment_log/
+linear_experiment/
+mydata/
