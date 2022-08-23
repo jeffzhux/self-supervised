@@ -1,7 +1,10 @@
 #config file
 #model
 backbone = dict(
-    type="resnet18"
+    type="ResNet",
+    depth=18,
+    num_classes=10,
+    maxpool=False
 )
 model = dict(
     type='Linear',
