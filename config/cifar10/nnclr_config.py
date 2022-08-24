@@ -1,6 +1,9 @@
 #model
 backbone = dict(
-    type="resnet18"
+    type="ResNet",
+    depth=18,
+    num_classes=512,
+    maxpool=False
 )
 model = dict(
     type='NNCLR'

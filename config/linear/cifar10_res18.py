@@ -58,5 +58,5 @@ lr_cfg = dict( # passed to adjust_learning_rate()
 log_interval = 20
 work_dir = 'linear_experiment'
 resume = None
-load = './experiment/cifar10/nnclr/20220822_161414/epoch_500.pth'
+load = './experiment/cifar10/nnclr/20220823_222548/epoch_500.pth'
 port = 10001

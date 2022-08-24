@@ -60,7 +60,8 @@ def build_model(backbone_cfg: ConfigDict, model_cfg: ConfigDict) -> nn.Module:
         model = NNCLR(backbone_q)
     elif model_name == 'Linear':
         backbone = models.__dict__[backbone_name](**backbone_args)
-        model = backbone
+        backbone = nn.Sequential(*list(backbone.children())[:-1])
+        model = DownStream(backbone, model_args)
     return model
 
 def build_optimizer(cfg, params):
