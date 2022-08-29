@@ -151,18 +151,3 @@ class BarlowTwinsLoss(torch.nn.Module):
         loss = c_diff.sum()
 
         return loss
-
-class TwinsLoss(torch.nn.Module):
-    def __init__(self, version: str = 'simplified') -> None:
-        super(TwinsLoss, self).__init__()
-        self.version = version
-        self.criterion = BarlowTwinsLoss()
-
-    def forward(
-        self,
-        p1: torch.Tensor,
-        z1: torch.Tensor,
-        p2: torch.Tensor,
-        z2: torch.Tensor):
-        
-        return 0.5 * (self.criterion(p1, z2) + self.criterion(p2, z1))

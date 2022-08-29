@@ -1,14 +1,9 @@
 """BYOL Model"""
 
-import torchvision
-from pickle import TRUE
-import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from models.modules.heads import SimSiamProjectionHead, SimSiamPredictionHead
-from models.utils import deactivate_requires_grad, update_momentum
-from models.modules.inpainter import Inpainter
-from losses.loss import BarlowTwinsLoss
+
 class OUR(nn.Module):
     def __init__(self, backbone_q: nn.Module):
         super(OUR, self).__init__()

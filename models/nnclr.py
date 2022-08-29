@@ -1,7 +1,7 @@
 """NNCLR Model"""
-from models.modules.memory_bank import NNMemoryBankModule
 import torch.nn as nn
-from models.modules.heads import BYOLProjectionHead, BYOLPredictionHead
+from models.modules.memory_bank import NNMemoryBankModule
+from models.modules.heads import NNCLRProjectionHead, NNCLRPredictionHead
 
 
 class NNCLR(nn.Module):
@@ -10,8 +10,8 @@ class NNCLR(nn.Module):
         super(NNCLR, self).__init__()
         
         self.backbone = backbone_q
-        self.projection_head = BYOLProjectionHead(512,1024,128)
-        self.prediction_head = BYOLPredictionHead(128,1024,128)
+        self.projection_head = NNCLRProjectionHead(512,1024,128)
+        self.prediction_head = NNCLRPredictionHead(128,1024,128)
 
         self.memory_bank = NNMemoryBankModule()
     def forward(self, x1, x2):

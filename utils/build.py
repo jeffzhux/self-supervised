@@ -21,6 +21,7 @@ import models
 from models.byol import BYOL
 from models.nnclr import NNCLR
 from models.simsiam import SimSiam
+from models.barlow_twins import BarlowTwins
 from models.our import OUR
 import losses
 
@@ -66,6 +67,11 @@ def build_model(backbone_cfg: ConfigDict, model_cfg: ConfigDict) -> nn.Module:
         resnet_q = models.__dict__[backbone_name](**backbone_args)
         backbone_q = nn.Sequential(*list(resnet_q.children())[:-1])
         model = SimSiam(backbone_q)
+
+    elif model_name == 'BarlowTwins':
+        resnet_q = models.__dict__[backbone_name](**backbone_args)
+        backbone_q = nn.Sequential(*list(resnet_q.children())[:-1])
+        model = BarlowTwins(backbone_q)
 
     elif model_name == 'OUR':
         resnet_q = models.__dict__[backbone_name](**backbone_args)

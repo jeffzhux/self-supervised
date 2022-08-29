@@ -5,7 +5,6 @@ from typing import List, Optional, Tuple
 import torch
 import torch.nn as nn
 
-
 class ProjectionHead(nn.Module):
     """Base class for all projection and prediction heads.
     Args:
@@ -114,20 +113,43 @@ class NNCLRProjectionHead(ProjectionHead):
         input_dim:int = 2048,
         hidden_dim:int = 2048,
         output_dim:int = 256) -> None:
-        super(NNCLRProjectionHead, self).__init__(
+        super(NNCLRProjectionHead, self).__init__([
             (input_dim, hidden_dim, nn.BatchNorm1d(hidden_dim), nn.ReLU(inplace=True)),
             (hidden_dim, hidden_dim, nn.BatchNorm1d(hidden_dim), nn.ReLU(inplace=True)),
-            (hidden_dim, output_dim, nn.BatchNorm1d(output_dim), None),
-        )
+            (hidden_dim, output_dim, nn.BatchNorm1d(output_dim), None)
+        ])
 
 class NNCLRPredictionHead(ProjectionHead):
+    """Projection head used for Barlow Twins.
+    
+    "The projector network has three linear layers, each with 8192 output
+    units. The first two layers of the projector are followed by a batch
+    normalization layer and rectified linear units." [0]
+
+    [0]: 2021, Barlow Twins, https://arxiv.org/abs/2103.03230
+
+    """
     def __init__(
         self,
         input_dim: int = 256,
         hidden_dim: int = 4096,
         output_dim: int = 256) -> None:
 
-        super(NNCLRPredictionHead, self).__init__(
+        super(NNCLRPredictionHead, self).__init__([
                 (input_dim, hidden_dim, nn.BatchNorm1d(hidden_dim), nn.ReLU(inplace=True)),
-                (hidden_dim, output_dim, None, None),
-            )
+                (hidden_dim, output_dim, None, None)
+            ])
+''''''
+class BarlowTwinsProjectionHead(ProjectionHead):
+    def __init__(
+        self,
+        input_dim: int = 2048,
+        hidden_dim: int = 8192,
+        output_dim: int = 8192) -> None:
+
+        super(BarlowTwinsProjectionHead, self).__init__([
+            (input_dim, hidden_dim, nn.BatchNorm1d(hidden_dim), nn.ReLU(inplace=True)),
+            (hidden_dim, hidden_dim, nn.BatchNorm1d(hidden_dim), nn.ReLU(inplace=True)),
+            (hidden_dim, output_dim, None, None)
+        ])
+        
