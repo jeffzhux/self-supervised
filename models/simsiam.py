@@ -1,4 +1,3 @@
-import torch
 import torch.nn as nn
 from models.modules.heads import SimSiamProjectionHead, SimSiamPredictionHead
 
@@ -24,14 +23,18 @@ class SimSiam(nn.Module):
         super(SimSiam, self).__init__()
 
         self.backbone = backbone
-        self.projection_head = SimSiamProjectionHead()
-        self.prediction_head = SimSiamPredictionHead()
+        self.projection_head = SimSiamProjectionHead(512, 512, 512)
+        self.prediction_head = SimSiamPredictionHead(512, 128, 512)
 
-    def forward(self, x):
-        f = self.backbone(x)
-        z = self.projection_head(f)
-        p = self.prediction_head(z)
+    def forward(self, x1, x2):
+        f1 = self.backbone(x1).flatten(start_dim=1)
+        z1 = self.projection_head(f1)
+        p1 = self.prediction_head(z1)
 
-        return p, z.detach()
+        f2 = self.backbone(x2).flatten(start_dim=1)
+        z2 = self.projection_head(f2)
+        p2 = self.prediction_head(z2)
+
+        return p1, z1.detach(), p2, z2.detach()
 
 

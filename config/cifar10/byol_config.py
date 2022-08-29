@@ -16,7 +16,7 @@ batch_size = 2048
 
 #training
 epochs = 500
-lr = 0.5
+lr = 1
 optimizer = dict(type='SGD', lr=lr, momentum=0.9, weight_decay=1e-4)
 
 lr_cfg = dict(  # passed to adjust_learning_rate(cfg=lr_cfg)

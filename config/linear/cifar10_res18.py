@@ -14,7 +14,7 @@ model = dict(
 
 # data
 data_dir = './mydata/cifar-10'
-batch_size = 512
+batch_size = 2048
 num_workers = 0 #num of CPU's worker are 4 times than num of GPU
 data = dict(
     train=dict(
@@ -58,5 +58,5 @@ lr_cfg = dict( # passed to adjust_learning_rate()
 log_interval = 20
 work_dir = 'linear_experiment'
 resume = None
-load = './experiment/cifar10/nnclr/20220823_222548/epoch_500.pth'
+load = './experiment/cifar10/nnclr/20220826_213931/epoch_500.pth'
 port = 10001
