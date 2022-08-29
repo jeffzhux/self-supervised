@@ -1,9 +1,7 @@
 import torch
 import torch.nn as nn
-import torchvision
 import torchvision.transforms as T
 from typing import List
-from data import transforms
 
 from data.transforms import GaussianBlur, Jigsaw, RandomRotate, RandomSolarization
 

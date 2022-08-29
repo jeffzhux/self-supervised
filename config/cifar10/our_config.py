@@ -8,7 +8,7 @@ backbone = dict(
 model = dict(
     type='OUR'
 )
-loss = dict(type='TwinsLoss')
+loss = dict(type='BarlowTwinsLoss')
 #data
 data_dir = './mydata/cifar-10'
 num_workers = 8 #cpu for dataloader, 可用GPU數量的4倍(根據經驗法則)，太大或太小會減慢速度

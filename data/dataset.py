@@ -4,9 +4,10 @@ import numpy as np
 from typing import Any, Callable, Optional, Tuple
 from PIL import Image
 
-from torch.utils.data import Dataset
+from torchvision import datasets
 from torchvision.datasets.vision import VisionDataset
 from torchvision.datasets.utils import check_integrity, download_and_extract_archive
+import torch
 
 class DarkDataset(VisionDataset):
     def __init__(self):

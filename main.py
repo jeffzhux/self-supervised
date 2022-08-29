@@ -3,7 +3,6 @@ import os
 import platform
 import argparse
 
-import torchvision
 import torch
 import torch.nn as nn
 import torch.backends.cudnn as cudnn
