@@ -9,7 +9,6 @@ class OUR(nn.Module):
         super(OUR, self).__init__()
         
         self.backbone = backbone_q
-        self.backbone = backbone_q
         self.projection_head = BarlowTwinsProjectionHead(512,2048,2048)
 
         self.memory_bank = NNMemoryBankModule()
@@ -21,6 +20,6 @@ class OUR(nn.Module):
         y2 = self.backbone(x2).flatten(start_dim=1)
         z2 = self.projection_head(y2)
 
-        z1 = self.memory_bank(z1.detach(), update=False)
+        # z1 = self.memory_bank(z1.detach(), update=False)
         z2 = self.memory_bank(z2.detach(), update=True)
-        return z1.detach(), z2.detach()
+        return z1, z2.detach()

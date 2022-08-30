@@ -15,7 +15,7 @@ num_workers = 8 #cpu for dataloader, 可用GPU數量的4倍(根據經驗法則)�
 batch_size = 2048
 
 #training
-epochs = 500
+epochs = 1
 lr = 0.5
 optimizer = dict(type='SGD', lr=lr, momentum=0.9, weight_decay=1e-4)
 
