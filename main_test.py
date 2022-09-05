@@ -3,7 +3,6 @@ import os
 import platform
 import argparse
 
-import torchvision
 import torch
 import torch.nn as nn
 import torch.backends.cudnn as cudnn
@@ -174,9 +173,9 @@ def train(model, dataloader, criterion, optimizer, epoch, cfg, logger=None, writ
         data_time.update(time.time() - iter_end)
 
         # compute output
-        p0, z0, p1, z1 = model(x0, x1)
+        out= model(x0, x1)
 
-        loss = criterion(p0, z0, p1, z1)
+        loss = criterion(*out)#0.5 * (criterion(p0, z1) + criterion(p1, z0)).mean()
         losses.update(loss.item(), x0.size(0))
 
         # compute gradient and do SGD step

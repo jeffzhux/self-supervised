@@ -1,5 +1,5 @@
 """BYOL Model"""
-
+import torch
 import torch.nn as nn
 from models.modules.memory_bank import NNMemoryBankModule
 from models.modules.heads import BarlowTwinsProjectionHead
@@ -11,7 +11,7 @@ class OUR(nn.Module):
         self.backbone = backbone_q
         self.projection_head = BarlowTwinsProjectionHead(512,2048,2048)
 
-        self.memory_bank = NNMemoryBankModule()
+        self.memory_bank = NNMemoryBankModule(size=4096)
     def forward(self, x1, x2):
 
         y1 = self.backbone(x1).flatten(start_dim=1) # (B, Cf, Hf, Wf) -> (B, C, 1, 1) -> (B, C)
@@ -21,5 +21,6 @@ class OUR(nn.Module):
         z2 = self.projection_head(y2)
 
         # z1 = self.memory_bank(z1.detach(), update=False)
+        
         z2 = self.memory_bank(z2.detach(), update=True)
         return z1, z2.detach()
