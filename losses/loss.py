@@ -145,7 +145,7 @@ class BarlowTwinsLoss(torch.nn.Module):
                 dist.all_reduce(c)
 
         # loss
-        c_diff = (c - torch.eye(D, device=device)).pow(2) # DxD
+        c_diff = (c - torch.eye(D, device=device)).pow_(2) # DxD
         # multiply off-diagonal elems of c_diff by lambda
         c_diff[~torch.eye(D, dtype=bool)] *= self.lambda_param
         loss = c_diff.sum()
@@ -174,7 +174,8 @@ class OurLoss(torch.nn.Module):
 
     def __init__(
         self, 
-        lambda_param: float = 5e-3, 
+        lambda_param: float = 5e-3,
+
         gather_distributed : bool = False
     ):
         """Lambda param configuration with default value like in [0]
@@ -188,33 +189,55 @@ class OurLoss(torch.nn.Module):
         """
         super(OurLoss, self).__init__()
         self.lambda_param = lambda_param
+        self.alpha_param = 0.5
         self.gather_distributed = gather_distributed
 
-    def forward(self, z_a: torch.Tensor, z_b: torch.Tensor) -> torch.Tensor:
+    def off_diagonal(self, x):
+        n, m = x.shape
+        assert n == m, f'{n}, {m}'
+        return x.flatten()[:-1].view(n - 1, n + 1)[:, 1:].flatten()
 
-        device = z_a.device
+    def cross_corr(self, c):
+        c_on_diag = torch.diagonal(c).add_(-1).pow_(2).sum()
+        c_off_diag = self.off_diagonal(c).pow_(2).sum()
+        c_loss = c_on_diag + self.lambda_param * c_off_diag
+        return c_loss
+
+    def forward(
+        self,
+        z_fg_a: torch.Tensor,
+        z_bg_a: torch.Tensor,
+        z_fg_b: torch.Tensor,
+        z_bg_b: torch.Tensor) -> torch.Tensor:
+
+        device = z_fg_a.device
 
         # normalize repr. along the batch dimension
-        z_a_norm = (z_a - z_a.mean(0)) / z_a.std(0) # NxD
-        z_b_norm = (z_b - z_b.mean(0)) / z_b.std(0) # NxD
+        z_fg_a_norm = (z_fg_a - z_fg_a.mean(0)) / z_fg_a.std(0) # NxD
+        z_fg_b_norm = (z_fg_b - z_fg_b.mean(0)) / z_fg_b.std(0) # NxD
 
-        N = z_a.size(0)
-        D = z_a.size(1)
+        z_bg_a_norm = (z_bg_a - z_bg_a.mean(0)) / z_bg_a.std(0) # NxD
+        z_bg_b_norm = (z_bg_b - z_bg_b.mean(0)) / z_bg_b.std(0) # NxD
+        N, D = z_fg_a.size()
 
         # cross-correlation matrix
-        c = torch.mm(z_a_norm.T, z_b_norm) / N # DxD
-
+        c_fg = torch.mm(z_fg_a_norm.T, z_fg_b_norm) / N # DxD
+        c_bg = torch.mm(z_bg_a_norm.T, z_bg_b_norm) / N # DxD
         # sum cross-correlation matrix between multiple gpus
         if self.gather_distributed and dist.is_initialized():
             world_size = dist.get_world_size()
             if world_size > 1:
-                c = c / world_size
-                dist.all_reduce(c)
+                c_fg = c_fg / world_size
+                dist.all_reduce(c_fg)
 
-        # loss
-        c_diff = (c - torch.eye(D, device=device)).pow(2) # DxD
-        # multiply off-diagonal elems of c_diff by lambda
-        c_diff[~torch.eye(D, dtype=bool)] *= self.lambda_param
-        loss = c_diff.sum()
+                c_bg = c_bg / world_size
+                dist.all_reduce(c_bg)
 
+        # invarience loss
+        c_fg_loss = self.cross_corr(c_fg)
+        c_bg_loss = self.cross_corr(c_bg)
+        #print(f'c_fg_loss : {c_fg_loss}')
+        #print(f'c_bg_loss : {c_bg_loss}')
+        loss = self.alpha_param * c_fg_loss + (1 - self.alpha_param) * c_bg_loss
+        #print(f'loss : {loss}')
         return loss

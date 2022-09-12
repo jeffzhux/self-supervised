@@ -10,8 +10,8 @@ import torch.distributed as dist
 import torch.multiprocessing as mp
 from torch.utils.tensorboard import SummaryWriter
 
-from data import SimCLRCollateFunction
-from data import DarkDataset
+from data import SimCLRCollateFunction, OurCollateFunction
+from data import CifarDataset
 from utils.config import Config
 from utils.util import AverageMeter, adjust_learning_rate, format_time, set_seed
 from utils.build import build_logger, build_loss, build_optimizer, build_model
@@ -109,9 +109,9 @@ def main_worker(rank, world_size, cfg):
     print('batch_size per gpu:', bsz_gpu)
 
     #build data loader
-    train_set = DarkDataset("mydata/cifar-10", download=False)
+    train_set = CifarDataset("mydata/cifar-10", train=True)
     train_sampler = torch.utils.data.distributed.DistributedSampler(train_set, shuffle=True)
-    collate_fn = SimCLRCollateFunction(input_size=32, gaussian_blur=0.)
+    collate_fn = OurCollateFunction()
     train_loader = torch.utils.data.DataLoader(
         train_set,
         batch_size=bsz_gpu,
@@ -164,7 +164,7 @@ def train(model, dataloader, criterion, optimizer, epoch, cfg, logger=None, writ
     num_iter = len(dataloader)
     iter_end = time.time()
     epoch_end = time.time()
-    for idx, ((x0, x1), _, _) in enumerate(dataloader):
+    for idx, (indice, (x0, x1)) in enumerate(dataloader):
         
         x0 = x0.cuda(non_blocking=True)
         x1 = x1.cuda(non_blocking=True)

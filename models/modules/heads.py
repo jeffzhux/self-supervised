@@ -153,3 +153,12 @@ class BarlowTwinsProjectionHead(ProjectionHead):
             (hidden_dim, output_dim, None, None)
         ])
         
+class SwaVPrototypes(ProjectionHead):
+    def __init__(self, input_dim: int=128, n_prototypes:int=3000):
+        super(SwaVPrototypes, self).__init__([])
+        self.layers = nn.Linear(input_dim, n_prototypes, bias=False)
+
+    @torch.no_grad()
+    def normalize(self):
+        """Normalizes the prototypes so that they are on the unit sphere."""
+        self.layers.weight.div_(torch.norm(self.layers.weight, dim=-1, keepdim=True))

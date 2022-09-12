@@ -5,5 +5,5 @@
 # All Rights Reserved
 
 from data.collate import ImageCollateFunction
-from data.collate import SimCLRCollateFunction
-from data.dataset import DarkDataset
+from data.collate import SimCLRCollateFunction, OurCollateFunction
+from data.dataset import DarkDataset, CifarDataset

@@ -204,3 +204,16 @@ class SimCLRCollateFunction(ImageCollateFunction):
             rr_prob=rr_prob,
             normalize=normalize,
         )
+
+class OurCollateFunction(nn.Module):
+    
+    def __init__(self):
+        super(OurCollateFunction, self).__init__()
+
+    def forward(self, batch):
+        
+        indice = [b[0] for b in batch]
+        image1 = torch.stack([b[1] for b in batch])
+        image2 = torch.stack([b[2] for b in batch])
+
+        return (indice, (image1, image2))
