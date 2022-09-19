@@ -91,6 +91,7 @@ def main_worker(rank, world_size, cfg):
     cfg.local_rank = local_rank
     torch.cuda.set_device(rank)
 
+    print(f'System : {platform.system()}')
     if platform.system() == 'Windows':
         dist.init_process_group(backend='gloo', init_method=f'tcp://localhost:{cfg.port}',
                             world_size=world_size, rank=rank)
@@ -207,4 +208,5 @@ def train(model, dataloader, criterion, optimizer, epoch, cfg, logger=None, writ
         writer.add_scalar('Pretrain/lr', lr, epoch)
         writer.add_scalar('Pretrain/loss', losses.avg, epoch)
 if __name__ == '__main__':
+    torch.cuda.empty_cache()
     main()
