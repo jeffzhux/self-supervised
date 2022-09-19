@@ -1,2 +1,0 @@
-2022-09-19 11:48:08: Epoch[epoch][idx/iter] [1][20/24] - data_time: 1.475,     batch_time: 2.484,     lr: 0.50000,     loss(loss avg): -0.410(-0.237)
-2022-09-19 11:48:11: Epoch [1] - epoch_time: 53s, train_loss: -0.268

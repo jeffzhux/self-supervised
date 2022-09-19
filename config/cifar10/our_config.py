@@ -14,7 +14,7 @@ loss = dict(
 )
 #data
 data_dir = './mydata/cifar-10'
-num_workers = 8 #cpu for dataloader, 可用GPU數量的4倍(根據經驗法則)，太大或太小會減慢速度
+num_workers = 4 #cpu for dataloader, 可用GPU數量的4倍(根據經驗法則)，太大或太小會減慢速度
 batch_size = 2048
 
 #training
@@ -38,7 +38,7 @@ lr_cfg = dict(  # passed to adjust_learning_rate(cfg=lr_cfg)
 #log & save
 log_interval = 20
 save_interval = 50
-work_dir = './experiment\\cifar10\\our'
+work_dir = './experiment/cifar10/our'
 resume = None
 load = None
 port = 10001
