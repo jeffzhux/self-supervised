@@ -72,7 +72,7 @@ class BYOLLoss(nn.Module):
         p2: torch.Tensor,
         z2: torch.Tensor):
         
-        return 0.5 * (self.criterion(p1, z2, self.version) + self.criterion(p2, z1, self.version)).mean()
+        return 0.5 * (self.criterion(p1, z2.detach(), self.version) + self.criterion(p2, z1.detach(), self.version))
 class SimSiamLoss(nn.Module):
     def __init__(self, version: str = 'simplified') -> None:
         super(SimSiamLoss, self).__init__()
@@ -217,5 +217,5 @@ class OurLoss(torch.nn.Module):
         fg_z2: torch.Tensor,
         fg_p2: torch.Tensor,
         c : torch.Tensor) -> torch.Tensor:
-        fg_loss = 0.5 * (self.criterion(fg_p2, fg_z1.detach()) + self.criterion(fg_p1, fg_z2.detach()))
+        fg_loss = 0.5 * (self.criterion(fg_p2, fg_z1.detach()) + self.criterion(fg_p1, fg_z2.detach())).mean()
         return self.alpha_param * fg_loss + (1 - self.alpha_param) * c

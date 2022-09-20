@@ -38,7 +38,6 @@ class Disentangler_mutual(nn.Module):
         else:
             ccam = torch.sigmoid(self.bn_head(self.activation_head(x))) # [N, 1, H, W]
 
-        x = x * ccam   # [N, H*W, C]
         fg_feats = x * ccam           # [N, C, H, W]
         bg_feats = x * (1-ccam)       # [N, C, H, W]
 
@@ -75,13 +74,13 @@ class OUR(nn.Module):
         return (-C).add_(-1)
 
     def forward(self, x1, x2, is_train=True):
+        #71.75 acc
 
         y1 = self.backbone(x1) # (B, Cf, Hf, Wf)
         fg_feats1, bg_feats1, ccam1 = self.ac_head(y1)
 
         fg_z1 = self.projection_head(fg_feats1.flatten(start_dim=1))
         fg_p1 = self.prediction_head(fg_z1)
-        #bg_feats1 = self.projection_head(bg_feats1)
 
         if not is_train:
             return fg_z1, fg_p1, ccam1
@@ -90,7 +89,6 @@ class OUR(nn.Module):
         fg_feats2, bg_feats2, ccam2 = self.ac_head(y2)
         fg_z2= self.projection_head(fg_feats2.flatten(start_dim=1))
         fg_p2 = self.prediction_head(fg_z2)
-        #bg_feats2 = self.projection_head(bg_feats2)
 
         c = 0.5 * (
             self.neg_coeff_constraint(y1, ccam1, fg_feats1, bg_feats1).mean() \

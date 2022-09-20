@@ -15,7 +15,7 @@ num_workers = 8 #cpu for dataloader, 可用GPU數量的4倍(根據經驗法則)�
 batch_size = 2048
 
 #training
-epochs = 1
+epochs = 500
 lr = 0.5
 optimizer = dict(type='SGD', lr=lr, momentum=0.9, weight_decay=1e-4)
 
@@ -32,7 +32,7 @@ lr_cfg = dict(  # passed to adjust_learning_rate(cfg=lr_cfg)
 #log & save
 log_interval = 20
 save_interval = 50
-work_dir = './experiment\\cifar10\\simsiam'
+work_dir = './experiment/cifar10/simsiam'
 resume = None
 load = None
 port = 10001
