@@ -11,7 +11,7 @@ model = dict(
 loss = dict(type='SimSiamLoss')
 #data
 data_dir = './mydata/cifar-10'
-num_workers = 8 #cpu for dataloader, 可用GPU數量的4倍(根據經驗法則)，太大或太小會減慢速度
+num_workers = 4 #cpu for dataloader, 可用GPU數量的4倍(根據經驗法則)，太大或太小會減慢速度
 batch_size = 2048
 
 #training

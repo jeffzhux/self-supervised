@@ -52,7 +52,7 @@ class OUR(nn.Module):
         self.backbone = backbone_q
         self.ac_head = Disentangler_mutual(512)
         self.projection_head = SimSiamProjectionHead(512, 512, 512)
-        self.prediction_head = SimSiamPredictionHead(512, 512, 512)
+        self.prediction_head = SimSiamPredictionHead(512, 128, 512)
     def neg_coeff_constraint(self, x, mask, pred_foreground, pred_background):
         # computes 2-C(F,B), which is equivalent to -C(F,B) as a loss term
         # we have 2-C(F,B) = H(F|B)/H(F) + H(B|F)/H(B), where:
