@@ -37,7 +37,7 @@ lr_cfg = dict(  # passed to adjust_learning_rate(cfg=lr_cfg)
 
 #log & save
 log_interval = 20
-save_interval = 50
+save_interval = 100
 work_dir = './experiment/cifar10/our'
 resume = None
 load = None

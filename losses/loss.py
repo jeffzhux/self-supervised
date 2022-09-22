@@ -13,7 +13,7 @@ class NTXentLoss(nn.Module):
 
     
 
-    def forward(self, z, p):
+    def forward(self, p, z):
         z = F.normalize(z, dim=-1)
         p = F.normalize(p, dim=-1)
 
@@ -99,7 +99,7 @@ class NNCLRLoss(nn.Module):
         p2: torch.Tensor,
         z2: torch.Tensor):
 
-        return 0.5 * (self.criterion(z1, p2) + self.criterion(z2, p1))
+        return 0.5 * (self.criterion(p2, z1) + self.criterion(p1, z2))
 
 class BarlowTwinsLoss(torch.nn.Module):
     """Implementation of the Barlow Twins Loss from Barlow Twins[0] paper.
@@ -167,7 +167,7 @@ class BarlowTwinsLoss(torch.nn.Module):
         loss = c_diff.sum()
 
         return loss
-
+'''
 class OurLoss(torch.nn.Module):
     """Implementation of the Barlow Twins Loss from Barlow Twins[0] paper.
     This code specifically implements the Figure Algorithm 1 from [0].
@@ -219,3 +219,54 @@ class OurLoss(torch.nn.Module):
         c : torch.Tensor) -> torch.Tensor:
         fg_loss = 0.5 * (self.criterion(fg_p2, fg_z1.detach()) + self.criterion(fg_p1, fg_z2.detach())).mean()
         return self.alpha_param * fg_loss + (1 - self.alpha_param) * c
+'''
+
+class OurLoss(torch.nn.Module):
+    """Implementation of the Barlow Twins Loss from Barlow Twins[0] paper.
+    This code specifically implements the Figure Algorithm 1 from [0].
+    
+    [0] Zbontar,J. et.al, 2021, Barlow Twins... https://arxiv.org/abs/2103.03230
+        Examples:
+        >>> # initialize loss function
+        >>> loss_fn = BarlowTwinsLoss()
+        >>>
+        >>> # generate two random transforms of images
+        >>> t0 = transforms(images)
+        >>> t1 = transforms(images)
+        >>>
+        >>> # feed through SimSiam model
+        >>> out0, out1 = model(t0, t1)
+        >>>
+        >>> # calculate loss
+        >>> loss = loss_fn(out0, out1)
+    """
+
+    def __init__(
+        self, 
+        lambda_param: float = 5e-3,
+        gather_distributed : bool = False):
+
+        super(OurLoss, self).__init__()
+        self.alpha_param = 0.999
+        self.gather_distributed = gather_distributed
+
+        self.criterion = NTXentLoss()
+
+    def forward(
+        self,
+        fg_z1: torch.Tensor,
+        fg_p1: torch.Tensor,
+        fg_z2: torch.Tensor,
+        fg_p2: torch.Tensor,
+        bg_z1: torch.Tensor,
+        bg_p1: torch.Tensor,
+        bg_z2: torch.Tensor,
+        bg_p2: torch.Tensor) -> torch.Tensor:
+
+        z1 = torch.cat((fg_z1, bg_z1))
+        p1 = torch.cat((fg_p1, bg_p1))
+        z2 = torch.cat((fg_z2, bg_z2))
+        p2 = torch.cat((fg_p2, bg_p2))
+
+        loss = 0.5 * (self.criterion(p2, z1) + self.criterion(p1, z2)).mean()
+        return loss

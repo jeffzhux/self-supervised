@@ -43,8 +43,7 @@ class Disentangler_mutual(nn.Module):
 
         return fg_feats, bg_feats, ccam
 
-
-
+'''
 class OUR(nn.Module):
     def __init__(self, backbone_q: nn.Module):
         super(OUR, self).__init__()
@@ -74,7 +73,7 @@ class OUR(nn.Module):
         return (-C).add_(-1)
 
     def forward(self, x1, x2, is_train=True):
-        #71.75 acc
+        #82.03 acc
 
         y1 = self.backbone(x1) # (B, Cf, Hf, Wf)
         fg_feats1, bg_feats1, ccam1 = self.ac_head(y1)
@@ -95,5 +94,40 @@ class OUR(nn.Module):
             + self.neg_coeff_constraint(y2, ccam2, fg_feats2, bg_feats2).mean()
         )
         return fg_z1, fg_p1, fg_z2, fg_p2, c 
+        
+        # return fg_feats1, bg_feats1, ccam1, fg_feats2, bg_feats2, ccam2
+'''
+
+class OUR(nn.Module):
+    def __init__(self, backbone_q: nn.Module):
+        super(OUR, self).__init__()
+        
+        self.backbone = backbone_q
+        self.ac_head = Disentangler_mutual(512)
+        self.projection_head = SimSiamProjectionHead(512, 512, 512)
+        self.prediction_head = SimSiamPredictionHead(512, 128, 512)
+
+    def forward(self, x1, x2, is_train=True):
+        #82.93
+        y1 = self.backbone(x1) # (B, Cf, Hf, Wf)
+        fg_feats1, bg_feats1, ccam1 = self.ac_head(y1)
+
+        fg_z1 = self.projection_head(fg_feats1.flatten(start_dim=1))
+        fg_p1 = self.prediction_head(fg_z1)
+
+        bg_z1 = self.projection_head(bg_feats1.flatten(start_dim=1))
+        bg_p1 = self.prediction_head(bg_z1)
+        if not is_train:
+            return fg_z1, fg_p1, ccam1
+
+        y2 = self.backbone(x2)
+        fg_feats2, bg_feats2, ccam2 = self.ac_head(y2)
+        
+        fg_z2= self.projection_head(fg_feats2.flatten(start_dim=1))
+        fg_p2 = self.prediction_head(fg_z2)
+
+        bg_z2 = self.projection_head(bg_feats2.flatten(start_dim=1))
+        bg_p2 = self.prediction_head(bg_z2)
+        return fg_z1, fg_p1, fg_z2, fg_p2, bg_z1, bg_p1, bg_z2, bg_p2
         
         # return fg_feats1, bg_feats1, ccam1, fg_feats2, bg_feats2, ccam2

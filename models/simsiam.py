@@ -27,6 +27,7 @@ class SimSiam(nn.Module):
         self.prediction_head = SimSiamPredictionHead(512, 128, 512)
 
     def forward(self, x1, x2):
+        # 81.79
         f1 = self.backbone(x1).flatten(start_dim=1)
         z1 = self.projection_head(f1)
         p1 = self.prediction_head(z1)
