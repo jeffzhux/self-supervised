@@ -3,6 +3,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.distributed as dist
+from utils.config import ConfigDict
 from utils.dist import get_rank, gather 
 
 
@@ -73,6 +74,7 @@ class BYOLLoss(nn.Module):
         z2: torch.Tensor):
         
         return 0.5 * (self.criterion(p1, z2.detach(), self.version) + self.criterion(p2, z1.detach(), self.version))
+
 class SimSiamLoss(nn.Module):
     def __init__(self, version: str = 'simplified') -> None:
         super(SimSiamLoss, self).__init__()
@@ -87,6 +89,21 @@ class SimSiamLoss(nn.Module):
         z2: torch.Tensor):
         
         return 0.5 * (self.criterion(p1, z2.detach(), self.version) + self.criterion(p2, z1.detach(), self.version)).mean()
+
+class SimCLRLoss(nn.Module):
+    def __init__(self, temperature: float, version: str = 'simplified') -> None:
+        super(SimCLRLoss, self).__init__()
+        self.version = version
+        print(temperature)
+        self.temperature = temperature
+        self.criterion = NTXentLoss(self.temperature )
+        
+    def forward(
+        self,
+        z1: torch.Tensor,
+        z2: torch.Tensor):
+        
+        return self.criterion(z1, z2)
 
 class NNCLRLoss(nn.Module):
     def __init__(self) -> None:

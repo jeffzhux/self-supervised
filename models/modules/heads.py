@@ -32,6 +32,21 @@ class ProjectionHead(nn.Module):
     def forward(self, x: torch.Tensor):
         return self.layers(x)
 
+class SimCLRProjectionHead(ProjectionHead):
+    """Projection head used for SimCLR.
+    "We use a MLP with one hidden layer to obtain zi = g(h) = W_2 * σ(W_1 * h)
+    where σ is a ReLU non-linearity." [0]
+    [0] SimCLR, 2020, https://arxiv.org/abs/2002.05709
+    """
+    def __init__(self,
+                 input_dim: int = 2048,
+                 hidden_dim: int = 2048,
+                 output_dim: int = 128):
+        super(SimCLRProjectionHead, self).__init__([
+            (input_dim, hidden_dim, None, nn.ReLU()),
+            (hidden_dim, output_dim, None, None),
+        ])
+
 class SimSiamProjectionHead(ProjectionHead):
     """Projection head used for SimSiam.
 
