@@ -205,10 +205,10 @@ class SimCLRCollateFunction(ImageCollateFunction):
             normalize=normalize,
         )
 
-class OurCollateFunction(nn.Module):
+class BaseCollateFunction(nn.Module):
     
     def __init__(self):
-        super(OurCollateFunction, self).__init__()
+        super(BaseCollateFunction, self).__init__()
 
     def forward(self, batch):
         

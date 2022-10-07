@@ -12,3 +12,4 @@ from data.transforms.solarize import RandomSolarization
 from data.transforms.jigsaw import Jigsaw
 from data.transforms.transform import cifar_linear
 from data.transforms.transform import cifar_test
+from data.transforms.transform import SimCLRTransform

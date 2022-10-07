@@ -1,3 +1,4 @@
+
 #model
 backbone = dict(
     type="ResNet",
@@ -17,6 +18,19 @@ loss = dict(
 data_dir = './mydata/cifar-10'
 num_workers = 4 #cpu for dataloader, 可用GPU數量的4倍(根據經驗法則)，太大或太小會減慢速度
 batch_size = 2048
+data = dict(
+    type='Cifar10Dataset',
+    root = data_dir,
+    train=True,
+    download=False,
+    transform = dict(
+        type = 'SimCLRTransform',
+        input_size=32,
+        gaussian_blur=0.
+    )
+)
+
+
 
 #training
 epochs = 1

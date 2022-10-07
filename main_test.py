@@ -4,17 +4,15 @@ import platform
 import argparse
 
 import torch
-import torch.nn as nn
 import torch.backends.cudnn as cudnn
 import torch.distributed as dist
 import torch.multiprocessing as mp
 from torch.utils.tensorboard import SummaryWriter
 
-from data import SimCLRCollateFunction, OurCollateFunction
-from data import CifarDataset
+from data import BaseCollateFunction
 from utils.config import Config
 from utils.util import AverageMeter, adjust_learning_rate, format_time, set_seed
-from utils.build import build_logger, build_loss, build_optimizer, build_model
+from utils.build import build_dataset, build_logger, build_loss, build_optimizer, build_model
 
 def get_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
@@ -110,9 +108,9 @@ def main_worker(rank, world_size, cfg):
     print('batch_size per gpu:', bsz_gpu)
 
     #build data loader
-    train_set = CifarDataset("mydata/cifar-10", train=True)
+    train_set = build_dataset(cfg.data)
     train_sampler = torch.utils.data.distributed.DistributedSampler(train_set, shuffle=True)
-    collate_fn = OurCollateFunction()
+    collate_fn = BaseCollateFunction()
     train_loader = torch.utils.data.DataLoader(
         train_set,
         batch_size=bsz_gpu,

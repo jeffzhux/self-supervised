@@ -25,21 +25,24 @@ from models.simclr import SimCLR
 from models.barlow_twins import BarlowTwins
 from models.our import OUR
 import losses
+import data
 
-def build_transform(cfg: dict) -> T.Compose:
-    return transform.__dict__[cfg['type']]()
+def build_transform(cfg: ConfigDict):
+    args = cfg.copy()
+    name = args.pop('type')
+    return data.transforms.__dict__[name](**args)
 
 def build_dataset(cfg: ConfigDict):
-
-    tf = build_transform(cfg['trans_dict'])
-    ds_dict = cfg.ds_dict
-    ds_name = ds_dict.pop('type')
-
-    ds_dict['transform'] = tf
-    if hasattr(torchvision.datasets, ds_name):
-        ds = getattr(torchvision.datasets, ds_name)(**ds_dict)
-
-    return ds
+    args = cfg.copy()
+    name = args.pop('type')
+    transform_args = args.pop('transform')
+    
+    args['transform'] = build_transform(transform_args)
+    if hasattr(torchvision.datasets, name):
+        dataset = getattr(torchvision.datasets, name)(**args)
+    else:
+        dataset = data.__dict__[name](**args)
+    return dataset
 
 def build_model(backbone_cfg: ConfigDict, model_cfg: ConfigDict) -> nn.Module:
     """
@@ -87,6 +90,7 @@ def build_model(backbone_cfg: ConfigDict, model_cfg: ConfigDict) -> nn.Module:
         backbone = nn.Sequential(*list(backbone.children())[:-1])
         model = DownStream(backbone, model_args)
     return model
+
 
 def build_optimizer(cfg, params):
     # cfg: ConfigDict

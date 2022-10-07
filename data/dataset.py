@@ -10,6 +10,8 @@ from torchvision.datasets.utils import check_integrity, download_and_extract_arc
 import torchvision.transforms as T
 
 from data.transforms import GaussianBlur, Jigsaw, RandomRotate, RandomSolarization
+from utils.build import build_transform
+from utils.config import Config, ConfigDict
 
 imagenet_normalize = {
     'mean': [0.485, 0.456, 0.406],
@@ -152,14 +154,34 @@ class DarkDataset(VisionDataset):
     def extra_repr(self) -> str:
         split = "Train" if self.train is True else "Test"
         return f"Split: {split}"
-
-class CifarDataset(datasets.CIFAR10):
+class Cifar10Dataset(datasets.CIFAR10):
     def __init__(self,
         root: str,
         train: bool,
+        transform: T.Compose,
         **kwargs):
+        
+        super(Cifar10Dataset, self).__init__(root, train=train, transform=transform, **kwargs)
+    def __getitem__(self, index):
+        img, target = self.data[index], self.targets[index]  # img:(H, W, C)=(32, 32, 3)
+    
+        img = Image.fromarray(img)
 
-        super().__init__(root, train=train, **kwargs)
+        img1 = self.transform(img)
+        img2 = self.transform(img)
+
+        
+        return (index, ) + (img1, img2)
+
+    
+class OURDataset(datasets.CIFAR10):
+    def __init__(self,
+        root: str,
+        train: bool,
+        transform: T.Compose,
+        **kwargs):
+        
+        super(Cifar10Dataset, self).__init__(root, train=train, transform=transform, **kwargs)
     def __getitem__(self, index):
         img, target = self.data[index], self.targets[index]  # img:(H, W, C)=(32, 32, 3)
     
