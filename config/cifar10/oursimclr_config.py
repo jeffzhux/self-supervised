@@ -1,4 +1,3 @@
-
 #model
 backbone = dict(
     type="ResNet",
@@ -7,13 +6,12 @@ backbone = dict(
     maxpool=False
 )
 model = dict(
-    type='SimCLR'
+    type='OurSimCLR'
 )
 loss = dict(
     type='SimCLRLoss',
     temperature=0.8
 )
-
 #data
 data_dir = './mydata/cifar-10'
 num_workers = 4 #cpu for dataloader, 可用GPU數量的4倍(根據經驗法則)，太大或太小會減慢速度
@@ -30,8 +28,6 @@ data = dict(
     )
 )
 
-
-
 #training
 epochs = 500
 lr = 0.5
@@ -43,14 +39,17 @@ lr_cfg = dict(  # passed to adjust_learning_rate(cfg=lr_cfg)
     lr=lr,
     decay_rate=0.1,
     # decay_steps=[100, 150]
-    warmup_steps=0,
-    # warmup_from=0.01
+    #start_step=0,
+    warmup_steps=0, # 100
+    #warmup_from=1e-6
+
+
 )
 
 #log & save
 log_interval = 20
-save_interval = 50
-work_dir = './experiment/cifar10/simclr'
+save_interval = 100
+work_dir = './experiment/cifar10/oursimclr'
 resume = None
 load = None
 port = 10001

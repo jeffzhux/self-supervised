@@ -170,7 +170,6 @@ class Cifar10Dataset(datasets.CIFAR10):
         img1 = self.transform(img)
         img2 = self.transform(img)
 
-        
         return (index, ) + (img1, img2)
 
     

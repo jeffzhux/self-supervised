@@ -1,4 +1,3 @@
-"""BYOL Model"""
 import torch
 import torch.nn as nn
 from models.modules.heads import SimSiamProjectionHead, SimSiamPredictionHead

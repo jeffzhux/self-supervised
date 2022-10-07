@@ -61,34 +61,14 @@ def build_model(backbone_cfg: ConfigDict, model_cfg: ConfigDict) -> nn.Module:
         backbone_q = nn.Sequential(*list(resnet_q.children())[:-1])
         backbone_k = nn.Sequential(*list(resnet_k.children())[:-1])
         model = BYOL(backbone_q, backbone_k)
-
-    elif model_name == 'NNCLR':
-        resnet_q = models.__dict__[backbone_name](**backbone_args)
-        backbone_q = nn.Sequential(*list(resnet_q.children())[:-1])
-        model = NNCLR(backbone_q)
-    elif model_name == 'SimCLR':
-        resnet_q = models.__dict__[backbone_name](**backbone_args)
-        backbone_q = nn.Sequential(*list(resnet_q.children())[:-1])
-        model = SimCLR(backbone_q)
-    elif model_name == 'SimSiam':
-        resnet_q = models.__dict__[backbone_name](**backbone_args)
-        backbone_q = nn.Sequential(*list(resnet_q.children())[:-1])
-        model = SimSiam(backbone_q)
-
-    elif model_name == 'BarlowTwins':
-        resnet_q = models.__dict__[backbone_name](**backbone_args)
-        backbone_q = nn.Sequential(*list(resnet_q.children())[:-1])
-        model = BarlowTwins(backbone_q)
-
-    elif model_name == 'OUR':
-        resnet_q = models.__dict__[backbone_name](**backbone_args)
-        backbone_q = nn.Sequential(*list(resnet_q.children())[:-1])
-        model = OUR(backbone_q)
-
     elif model_name == 'Linear':
         backbone = models.__dict__[backbone_name](**backbone_args)
         backbone = nn.Sequential(*list(backbone.children())[:-1])
         model = DownStream(backbone, model_args)
+    else:
+        resnet_q = models.__dict__[backbone_name](**backbone_args)
+        backbone_q = nn.Sequential(*list(resnet_q.children())[:-1])
+        model = models.__dict__[model_name](backbone_q)
     return model
 
 

@@ -174,7 +174,7 @@ def train(model, dataloader, criterion, optimizer, epoch, cfg, logger=None, writ
         # compute output
         out= model(x0, x1)
 
-        loss = criterion(*out)#0.5 * (criterion(p0, z1) + criterion(p1, z0)).mean()
+        loss = criterion(*out)
         losses.update(loss.item(), x0.size(0))
 
         # compute gradient and do SGD step

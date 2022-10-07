@@ -94,9 +94,8 @@ class SimCLRLoss(nn.Module):
     def __init__(self, temperature: float, version: str = 'simplified') -> None:
         super(SimCLRLoss, self).__init__()
         self.version = version
-        print(temperature)
         self.temperature = temperature
-        self.criterion = NTXentLoss(self.temperature )
+        self.criterion = NTXentLoss(self.temperature)
         
     def forward(
         self,
