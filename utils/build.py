@@ -30,10 +30,14 @@ import data
 def build_transform(cfg: ConfigDict):
     args = cfg.copy()
     name = args.pop('type')
-    return data.transforms.__dict__[name](**args)
+    if name:
+        return transform.__dict__[name](**args)
+    else:
+        return None
 
 def build_dataset(cfg: ConfigDict):
     args = cfg.copy()
+
     name = args.pop('type')
     transform_args = args.pop('transform')
     

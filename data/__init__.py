@@ -6,4 +6,4 @@
 
 from data.collate import ImageCollateFunction
 from data.collate import SimCLRCollateFunction, BaseCollateFunction
-from data.dataset import DarkDataset, Cifar10Dataset
+from data.dataset import Cifar10Dataset

@@ -15,29 +15,25 @@ model = dict(
 # data
 data_dir = './mydata/cifar-10'
 batch_size = 2048
-num_workers = 0 #num of CPU's worker are 4 times than num of GPU
+num_workers = 4   #num of CPU's worker are 4 times than num of GPU
 data = dict(
     train=dict(
-        ds_dict=dict(
-            type='CIFAR10',
-            root = data_dir,
-            download = False,
-            train=True
-        ),
-        trans_dict=dict(
+        type='CIFAR10',
+        root = data_dir,
+        download = False,
+        train=True,
+        transform = dict(
             type='cifar_linear'
-        ),
+        )
     ),
     test=dict(
-        ds_dict=dict(
-            type='CIFAR10',
-            root = data_dir,
-            download = False,
-            train=False
-        ),
-        trans_dict=dict(
-            type='cifar_test'
-        ),
+        type='CIFAR10',
+        root = data_dir,
+        download = False,
+        train=False,
+        transform = dict(
+            type='cifar_linear'
+        )
     )
 )
 
@@ -56,7 +52,7 @@ lr_cfg = dict( # passed to adjust_learning_rate()
 
 # log, load & save
 log_interval = 20
-work_dir = 'linear_experiment'
+work_dir = 'linear_experiment/simclr'
 resume = None
-load = './experiment/cifar10/simsiam/20220920_232420/epoch_200.pth'
+load = './experiment/cifar10/simclr/20221011_214921/epoch_200.pth'
 port = 10001

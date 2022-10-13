@@ -29,7 +29,7 @@ data = dict(
 )
 
 #training
-epochs = 500
+epochs = 1
 lr = 0.5
 optimizer = dict(type='SGD', lr=lr, momentum=0.9, weight_decay=1e-4)
 
